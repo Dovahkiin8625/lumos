@@ -22,7 +22,14 @@ class StreamableHttpTransport:
         self._client: httpx.AsyncClient | None = None
 
     async def start(self) -> None:
-        self._client = httpx.AsyncClient(timeout=httpx.Timeout(connect=10, read=60))
+        try:
+            self._client = httpx.AsyncClient(
+                timeout=httpx.Timeout(None, connect=10.0, read=60),
+            )
+        except Exception as e:
+            raise McpConnectionError(
+                f"streamable_http client init failed: {e}", cause=e,
+            ) from e
 
     async def read_message(self) -> dict[str, Any]:
         """Streamable HTTP的read语义：阻塞等待下一个SSE事件。"""

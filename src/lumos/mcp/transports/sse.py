@@ -18,8 +18,10 @@ class SseTransport:
         self._reader_task: asyncio.Task | None = None
 
     async def start(self) -> None:
-        self._client = httpx.AsyncClient(timeout=httpx.Timeout(connect=10, read=None))
         try:
+            self._client = httpx.AsyncClient(
+                timeout=httpx.Timeout(None, connect=10.0, read=None),
+            )
             req = self._client.build_request("GET", self.url, headers=self.headers)
             self._response = await self._client.send(req, stream=True)
             self._response.raise_for_status()
