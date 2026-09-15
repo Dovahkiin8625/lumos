@@ -34,6 +34,6 @@ class BaseProvider(ABC):
     async def embed(self, texts: list[str]) -> list[list[float]]:
         """文本嵌入接口（一阶段不实现，二阶段RAG时由VectorServiceProvider覆盖）。"""
         raise NotImplementedError(
-            "embed() not implemented in phase 1; "
+            "embed() not implemented in phase 1 RAG-disabled; "
             "use VectorServiceProvider in phase 2"
         )
