@@ -91,4 +91,4 @@ async def test_http_request_real(respx_mock):
     tool = HttpRequestTool()
     result = await tool.execute(url="https://example.com/api", method="GET")
     assert "200" in result
-    assert '"ok": true' in result
+    assert '"ok":true' in result
