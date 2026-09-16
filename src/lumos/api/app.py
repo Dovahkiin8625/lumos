@@ -35,6 +35,8 @@ def create_app(config: LumosConfig, *, for_testing: bool = False) -> FastAPI:
 
     @app.on_event("startup")
     async def _startup():
+        if not for_testing and not config.auth.jwt_secret:
+            raise RuntimeError("auth.jwt_secret must be set")
         eng = get_engine(config.db.url, echo=config.db.echo)
         app.state.engine = eng
         await init_db(eng)
