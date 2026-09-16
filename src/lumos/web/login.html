@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登录 - Lumos</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <h1>Lumos</h1>
+      <p>基于Agent的知识问答系统</p>
+      <div class="login-tabs">
+        <button id="tab-login" class="active">登录</button>
+        <button id="tab-register">注册</button>
+      </div>
+      <form id="auth-form" class="login-form">
+        <input id="email" type="email" placeholder="邮箱" required />
+        <input id="password" type="password" placeholder="密码 (至少8位)" required minlength="8" />
+        <button type="submit" id="submit-btn">登录</button>
+        <div class="error-msg" id="error-msg"></div>
+      </form>
+    </div>
+  </div>
+  <script>
+    let mode = 'login';
+    const tabLogin = document.getElementById('tab-login');
+    const tabRegister = document.getElementById('tab-register');
+    const submitBtn = document.getElementById('submit-btn');
+    const errorMsg = document.getElementById('error-msg');
+
+    tabLogin.onclick = () => switchMode('login');
+    tabRegister.onclick = () => switchMode('register');
+
+    function switchMode(newMode) {
+      mode = newMode;
+      tabLogin.classList.toggle('active', mode === 'login');
+      tabRegister.classList.toggle('active', mode === 'register');
+      submitBtn.textContent = mode === 'login' ? '登录' : '注册';
+      errorMsg.textContent = '';
+    }
+
+    document.getElementById('auth-form').onsubmit = async (e) => {
+      e.preventDefault();
+      errorMsg.textContent = '';
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const url = mode === 'login' ? '/api/auth/login' : '/api/auth/register';
+      try {
+        const r = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        if (!r.ok) {
+          const detail = (await r.json()).detail || '请求失败';
+          errorMsg.textContent = typeof detail === 'string' ? detail : JSON.stringify(detail);
+          return;
+        }
+        const data = await r.json();
+        localStorage.setItem('lumos.access_token', data.access_token);
+        // refresh_token存httpOnly cookie需要后端设置，一阶段存localStorage
+        localStorage.setItem('lumos.refresh_token', data.refresh_token);
+        window.location.href = '/';
+      } catch (err) {
+        errorMsg.textContent = err.message;
+      }
+    };
+  </script>
+</body>
+</html>
