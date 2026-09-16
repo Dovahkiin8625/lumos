@@ -12,6 +12,7 @@ from lumos.skills.manager import SkillManager
 from lumos.mcp.manager import McpManager
 from lumos.mcp.config import McpServerConfig
 from lumos.api.routes.auth import router as auth_router
+from lumos.api.runners import Runners
 
 
 def create_app(config: LumosConfig, *, for_testing: bool = False) -> FastAPI:
@@ -59,9 +60,12 @@ def create_app(config: LumosConfig, *, for_testing: bool = False) -> FastAPI:
         if hasattr(app.state, "mcp_manager"):
             await app.state.mcp_manager.shutdown()
 
+    app.state.runners = Runners()
     app.include_router(auth_router)
     from lumos.api.routes.sessions import router as sessions_router
     from lumos.api.routes.messages import router as messages_router
+    from lumos.api.routes.ws import router as ws_router
     app.include_router(sessions_router)
     app.include_router(messages_router)
+    app.include_router(ws_router)
     return app
