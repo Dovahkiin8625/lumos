@@ -60,4 +60,8 @@ def create_app(config: LumosConfig, *, for_testing: bool = False) -> FastAPI:
             await app.state.mcp_manager.shutdown()
 
     app.include_router(auth_router)
+    from lumos.api.routes.sessions import router as sessions_router
+    from lumos.api.routes.messages import router as messages_router
+    app.include_router(sessions_router)
+    app.include_router(messages_router)
     return app
