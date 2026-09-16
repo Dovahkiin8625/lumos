@@ -65,7 +65,11 @@ def create_app(config: LumosConfig, *, for_testing: bool = False) -> FastAPI:
     from lumos.api.routes.sessions import router as sessions_router
     from lumos.api.routes.messages import router as messages_router
     from lumos.api.routes.ws import router as ws_router
+    from lumos.api.routes.skills import router as skills_router
+    from lumos.api.routes.mcp import router as mcp_router
     app.include_router(sessions_router)
     app.include_router(messages_router)
     app.include_router(ws_router)
+    app.include_router(skills_router)
+    app.include_router(mcp_router)
     return app
