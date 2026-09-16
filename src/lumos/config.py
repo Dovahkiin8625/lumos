@@ -99,6 +99,20 @@ class LumosConfig:
 _ENV_RE = re.compile(r"\$\{([A-Z_][A-Z0-9_]*)\}")
 
 
+_CONFIG_INSTANCE: "LumosConfig | None" = None
+
+
+def set_config(cfg: "LumosConfig") -> None:
+    global _CONFIG_INSTANCE
+    _CONFIG_INSTANCE = cfg
+
+
+def get_config() -> "LumosConfig":
+    if _CONFIG_INSTANCE is None:
+        raise RuntimeError("Config not initialized; call set_config() first")
+    return _CONFIG_INSTANCE
+
+
 def _expand_env(value: str) -> str:
     def replace(m: re.Match[str]) -> str:
         key = m.group(1)
