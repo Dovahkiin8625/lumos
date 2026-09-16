@@ -56,6 +56,10 @@ class StreamableHttpTransport:
                     "Accept": "application/json, text/event-stream",
                 },
             )
+            # MCP notifications (e.g. notifications/initialized) 返回 202 Accepted
+            # 且 body 为空 — 服务器稍后通过 SSE 推送响应。
+            if resp.status_code == 202:
+                return {"status": "accepted"}
             resp.raise_for_status()
             ct = resp.headers.get("content-type", "")
             if "text/event-stream" in ct:
