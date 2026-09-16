@@ -25,7 +25,7 @@ def main() -> int:
         return 0
     if args.cmd == "admin" and args.admin_cmd == "create":
         from sqlalchemy.ext.asyncio import async_sessionmaker
-        from lumos.config import load_config
+        from lumos.config import load_config, set_config
         from lumos.persistence.db import get_engine, init_db
         from lumos.persistence.repositories.users import UserRepository
         from lumos.api.auth_utils import hash_password
