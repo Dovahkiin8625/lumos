@@ -1,7 +1,15 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import { useDark } from '@vueuse/core'
+import router from './router'
 import './style.css'
+import App from './App.vue'
 
-const app = createApp({
-  template: '<div class="p-8">Lumos bootstrap OK</div>',
-})
+// Apply theme pre-mount to avoid FOUC
+const isDark = useDark()
+document.documentElement.classList.toggle('dark', isDark.value)
+
+const app = createApp(App)
+app.use(createPinia())
+app.use(router)
 app.mount('#app')
