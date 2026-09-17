@@ -17,6 +17,7 @@ const ui = useUiStore()
 const sessions = useSessionsStore()
 const renamingId = ref<string | null>(null)
 const renameDraft = ref('')
+const committing = ref(false)
 
 function closeSidebar() {
   ui.closeSidebar()
@@ -51,10 +52,12 @@ function startRename(id: string, currentTitle: string) {
 }
 
 async function commitRename(id: string) {
+  if (committing.value) return
+  committing.value = true
   const t = renameDraft.value.trim()
   renamingId.value = null
-  if (!t) return
   try {
+    if (!t) return
     const { api } = await import('@/api/client')
     await api.patch(`/api/sessions/${id}`, { title: t })
     const s = sessions.list.find((x) => x.id === id)
@@ -62,6 +65,8 @@ async function commitRename(id: string) {
     if (sessions.current?.id === id) sessions.current.title = t
   } catch {
     toast.error('重命名失败')
+  } finally {
+    committing.value = false
   }
 }
 </script>
@@ -102,7 +107,7 @@ async function commitRename(id: string) {
                   class="min-w-0 flex-1 rounded border border-accent bg-background px-1.5 py-0.5 text-sm outline-none"
                   @click.stop
                   @keydown.enter="commitRename(s.id)"
-                  @keydown.esc="renamingId = null"
+                  @keydown.esc="renamingId = null; renameDraft = ''"
                   @blur="commitRename(s.id)"
                 />
               </template>
