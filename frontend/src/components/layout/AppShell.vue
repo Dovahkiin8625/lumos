@@ -6,6 +6,8 @@ import { toast } from 'vue-sonner'
 import { api } from '@/api/client'
 import Logo from '@/components/common/Logo.vue'
 import AvatarMenu from '@/components/common/AvatarMenu.vue'
+import SessionSidebar from '@/components/chat/SessionSidebar.vue'
+import SettingsDrawer from '@/components/settings/SettingsDrawer.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useSessionsStore } from '@/stores/sessions'
 import { useUiStore } from '@/stores/ui'
@@ -132,7 +134,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
       <AvatarMenu :is-admin="isAdmin" />
     </div>
 
-    <slot name="drawers" />
+    <SessionSidebar />
+    <SettingsDrawer />
   </div>
 </template>
 

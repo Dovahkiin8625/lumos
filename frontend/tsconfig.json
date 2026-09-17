@@ -32,6 +32,8 @@
     "src/components/layout/**/*",
     "src/components/common/**/*",
     "src/components/auth/**/*",
+    "src/components/chat/**/*",
+    "src/components/settings/**/*",
     "vite.config.ts"
   ],
   "exclude": [],
