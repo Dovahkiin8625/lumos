@@ -15,7 +15,7 @@ const router = createRouter({
       component: () => import('@/components/layout/AppShell.vue'),
       children: [
         { path: '', redirect: '/chat' },
-        { path: 'chat', name: 'chat', component: () => import('@/components/chat/_ChatViewPlaceholder.vue') },
+        { path: 'chat', name: 'chat', component: () => import('@/components/chat/ChatView.vue') },
         { path: 'admin', name: 'admin', component: () => import('@/components/admin/_AdminViewPlaceholder.vue') },
       ],
     },
