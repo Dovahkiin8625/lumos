@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from '@/components/ui/dialog'
@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import type { SkillOut, SkillCreate } from '@/types/domain'
+import { useSkillsStore } from '@/stores/skills'
 
 const props = defineProps<{ open: boolean; editing: SkillOut | null }>()
 const emit = defineEmits<{ 'update:open': [boolean]; saved: [] }>()
@@ -80,7 +81,6 @@ async function submit() {
       max_steps: form.value.max_steps,
       instructions: form.value.instructions,
     }
-    const { useSkillsStore } = await import('@/stores/skills')
     const store = useSkillsStore()
     if (props.editing) {
       await store.update(props.editing.name, payload)

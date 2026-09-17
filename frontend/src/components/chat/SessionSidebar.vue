@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { Plus, Trash2, MessageSquare } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import {
@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useUiStore } from '@/stores/ui'
 import { useSessionsStore } from '@/stores/sessions'
+import { api } from '@/api/client'
 
 const ui = useUiStore()
 const sessions = useSessionsStore()
@@ -58,7 +59,6 @@ async function commitRename(id: string) {
   renamingId.value = null
   try {
     if (!t) return
-    const { api } = await import('@/api/client')
     await api.patch(`/api/sessions/${id}`, { title: t })
     const s = sessions.list.find((x) => x.id === id)
     if (s) s.title = t

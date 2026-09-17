@@ -111,7 +111,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
         </template>
         <button
           v-else
-          class="inline-flex max-w-[320px] items-center gap-1.5 truncate rounded-md px-2.5 py-1 text-sm font-medium text-foreground hover:bg-muted transition-colors disabled:cursor-default disabled:hover:bg-transparent"
+          class="group inline-flex max-w-[320px] items-center gap-1.5 truncate rounded-md px-2.5 py-1 text-sm font-medium text-foreground hover:bg-muted transition-colors disabled:cursor-default disabled:hover:bg-transparent"
           :class="{ 'text-muted-foreground font-normal': !sessions.current }"
           :disabled="isAdmin"
           @click="startEdit"

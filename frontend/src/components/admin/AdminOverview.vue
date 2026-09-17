@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { RefreshCw, Activity, Database, Cpu, Plug } from 'lucide-vue-next'
+import { RefreshCw, Activity, Database, Plug } from 'lucide-vue-next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { api } from '@/api/client'
@@ -98,13 +98,9 @@ onMounted(async () => {
           <span class="text-muted-foreground">Providers</span>
           <span class="font-mono text-foreground">
             <template v-for="(v, k) in health?.providers ?? {}" :key="k">
-              {{ k }}={{ v }}
+              <span class="mr-2">{{ k }}={{ v }}</span>
             </template>
           </span>
-        </div>
-        <div class="flex items-center justify-between">
-          <span class="text-muted-foreground">Provider 状态</span>
-          <Cpu class="h-3.5 w-3.5 text-muted-foreground" />
         </div>
         <div v-if="health?.mcp_servers && Object.keys(health.mcp_servers).length" class="mt-2 space-y-1 border-t border-border pt-2">
           <div

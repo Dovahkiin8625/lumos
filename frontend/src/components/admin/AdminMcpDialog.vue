@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import type { McpServerCreate, McpServerOut, McpTransport } from '@/types/domain'
+import { api } from '@/api/client'
 
 const props = defineProps<{ open: boolean; editing: McpServerOut | null }>()
 const emit = defineEmits<{ 'update:open': [boolean]; saved: [] }>()
@@ -102,7 +103,6 @@ async function submit() {
       url: form.value.url || undefined,
       headers: parseKv(headersText.value),
     }
-    const { api } = await import('@/api/client')
     if (props.editing) {
       await api.patch(`/api/mcp/servers/${props.editing.id}`, payload)
     } else {

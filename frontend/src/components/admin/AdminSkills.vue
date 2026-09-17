@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { Plus, Pencil, Trash2, RotateCw, Power, PowerOff } from 'lucide-vue-next'
+import { Plus, Pencil, Trash2, RotateCw } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
