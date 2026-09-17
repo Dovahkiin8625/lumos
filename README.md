@@ -8,7 +8,7 @@
 - 🔧 **可扩展工具系统**：JSON Schema装饰器注册，8个内置工具
 - 📚 **Skills系统**：SKILL.md frontmatter，启用即生效
 - 🔌 **MCP客户端**：stdio / SSE / StreamableHTTP三种传输
-- 💬 **Web聊天界面**：FastAPI后端 + Vanilla JS前端，WebSocket流式
+- 💬 **Web聊天界面**：FastAPI后端 + Vue 3 + Vite前端（shadcn-vue + Tailwind），WebSocket流式
 - 👥 **多用户认证**：JWT (access + refresh) + bcrypt
 - 💾 **持久化**：SQLite (异步SQLAlchemy 2.0)
 - 📊 **可观测性**：结构化日志 + 健康检查
@@ -24,7 +24,29 @@ cd lumos
 pip install -e ".[dev]"
 ```
 
-### 2. 配置
+### 2. 构建前端（首次或前端更新后）
+
+需要 Node.js 18+。
+
+```bash
+cd frontend
+npm install
+npm run build
+cd ..
+```
+
+开发模式（推荐贡献代码时使用）：
+
+```bash
+# 终端 1
+lumos serve --config config.yaml
+
+# 终端 2
+cd frontend && npm run dev
+# 浏览器打开 http://127.0.0.1:5173
+```
+
+### 3. 配置
 
 复制样例配置：
 
@@ -43,7 +65,7 @@ DEFAULT_ADMIN_PASSWORD=your-strong-password
 
 编辑 `config.yaml`，设置provider和model。
 
-### 3. 创建管理员
+### 4. 创建管理员
 
 ```bash
 lumos admin create --email admin@example.com --password your-password
@@ -51,7 +73,7 @@ lumos admin create --email admin@example.com --password your-password
 
 或设置`config.yaml`的`auth.default_admin_password`环境变量，自动创建。
 
-### 4. 启动
+### 5. 启动
 
 ```bash
 lumos serve --config config.yaml
@@ -59,7 +81,7 @@ lumos serve --config config.yaml
 
 浏览器打开 http://127.0.0.1:8000
 
-### 5. 使用
+### 6. 使用
 
 - 注册或登录
 - 点击"+ 新会话"
