@@ -7,7 +7,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/components/auth/_LoginViewPlaceholder.vue'),
+      component: () => import('@/components/auth/LoginView.vue'),
       meta: { public: true },
     },
     {
