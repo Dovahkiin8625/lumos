@@ -29,6 +29,8 @@
     "src/composables/**/*",
     "src/stores/ui.ts",
     "src/components/ui/**/*",
+    "src/components/layout/**/*",
+    "src/components/common/**/*",
     "vite.config.ts"
   ],
   "exclude": [],
