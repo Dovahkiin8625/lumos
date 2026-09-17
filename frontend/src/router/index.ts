@@ -16,7 +16,7 @@ const router = createRouter({
       children: [
         { path: '', redirect: '/chat' },
         { path: 'chat', name: 'chat', component: () => import('@/components/chat/ChatView.vue') },
-        { path: 'admin', name: 'admin', component: () => import('@/components/admin/_AdminViewPlaceholder.vue') },
+        { path: 'admin', name: 'admin', component: () => import('@/components/admin/AdminView.vue') },
       ],
     },
     { path: '/:pathMatch(.*)*', redirect: '/' },
