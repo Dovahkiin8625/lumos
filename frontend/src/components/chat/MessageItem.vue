@@ -16,23 +16,23 @@ hljs.registerLanguage('python', python)
 hljs.registerLanguage('bash', bash)
 hljs.registerLanguage('json', json)
 
-marked.setOptions({
+// Marked v14 removed the built-in `highlight` option from setOptions.
+// Use the official renderer override so hljs actually runs against code blocks.
+marked.use({
   breaks: true,
-  // Marked v14 removed the built-in `highlight` option from MarkedOptions;
-  // it still accepts the property at runtime, so cast to any to preserve
-  // the verbatim brief while satisfying vue-tsc.
-  highlight(code: string, language?: string): string {
-    if (language && hljs.getLanguage(language)) {
-      try {
-        return hljs.highlight(code, { language }).value
-      } catch {
-        // fall through
-      }
-    }
-    return hljs.highlightAuto(code).value
+  renderer: {
+    code(token: { text: string; lang?: string } | string): string {
+      const code = typeof token === 'string' ? token : token.text
+      const lang = typeof token === 'string' ? undefined : token.lang
+      const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext'
+      const highlighted =
+        lang && hljs.getLanguage(lang)
+          ? hljs.highlight(code, { language: lang }).value
+          : hljs.highlightAuto(code).value
+      return `<pre><code class="hljs language-${language}">${highlighted}</code></pre>`
+    },
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-} as any)
+})
 
 const props = defineProps<{
   message: MessageOut
