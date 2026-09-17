@@ -17,3 +17,13 @@ build/
 *.egg-info/
 .vscode/
 .idea/
+
+# 前端（Vue 3 + Vite）
+node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+
+# uv debug logs
+uv.err
+uv.out
