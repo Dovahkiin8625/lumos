@@ -12,7 +12,7 @@
 - 👥 **多用户认证**：JWT (access + refresh) + bcrypt
 - 💾 **持久化**：SQLite (异步SQLAlchemy 2.0)
 - 📊 **可观测性**：结构化日志 + 健康检查
-- 🚀 **RAG-ready**：Provider.embed()接口预留，二阶段接入vector-service
+- 🚀 **知识库 (RAG)**：PDF/DOCX/PPTX/HTML/Markdown 上传 + Docling 解析 + BGE-M3 嵌入 + BGE-Reranker 重排 + Milvus 检索，Admin UI 带引用面板
 
 ## 快速开始
 
@@ -97,14 +97,16 @@ lumos serve --config config.yaml
 - **添加自定义工具**：参见 [docs/tools.md](docs/tools.md)
 - **创建Skills**：参见 [docs/skills.md](docs/skills.md)
 - **接入MCP服务器**：参见 [docs/mcp.md](docs/mcp.md)
+- **管理知识库 / RAG**：参见 [docs/knowledge-base.md](docs/knowledge-base.md)
 
 ## 路线图
 
 - ✅ 一阶段：Agent基础 + 工具/Skills/MCP + Web界面
-- 🔜 二阶段：RAG（通过vector-service）
-- 🔜 三阶段：Anthropic / Gemini Provider
-- 🔜 四阶段：OpenTelemetry追踪
-- 🔜 五阶段：多租户与团队管理
+- ✅ 二阶段：知识库 (RAG) — 通过 vector-service
+- 🔜 三阶段：聊天 Agent 自动调用知识库工具
+- 🔜 四阶段：Anthropic / Gemini Provider
+- 🔜 五阶段：OpenTelemetry 追踪
+- 🔜 六阶段：多模态检索（图片 / 表格）
 
 ## 开发
 
