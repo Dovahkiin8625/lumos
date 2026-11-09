@@ -1,0 +1,44 @@
+# Lumos主配置 — MiniMax API
+log_level: INFO
+
+server:
+  host: 0.0.0.0
+  port: 8000
+  cors_origins: []
+
+provider:
+  type: openai_compat
+  base_url: https://api.minimax.cn/v1
+  api_key: ${OPENAI_API_KEY}
+  model: MiniMax-M2
+  temperature: 1.0
+  max_tokens: 8192
+  timeout: 120
+
+db:
+  url: sqlite+aiosqlite:///./data/lumos.db
+  echo: false
+
+tools:
+  allowed_paths:
+    - ./data/workspace
+  shell_enabled: true
+  default_timeout: 30
+
+skills:
+  dirs:
+    - ./skills
+
+mcp_servers: []
+
+auth:
+  jwt_secret: ${JWT_SECRET}
+  access_ttl: 86400
+  refresh_ttl: 2592000
+  bcrypt_rounds: 12
+  default_admin_email: admin@example.com
+  default_admin_password: ${DEFAULT_ADMIN_PASSWORD}
+
+agent:
+  max_steps: 20
+  context_compress_threshold: 150000

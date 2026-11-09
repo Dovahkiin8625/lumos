@@ -27,3 +27,7 @@ frontend/.vite/
 # uv debug logs
 uv.err
 uv.out
+*.log
+.playwright-mcp
+.superpowers
+.venv-new

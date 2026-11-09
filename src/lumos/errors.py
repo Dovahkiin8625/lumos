@@ -56,3 +56,39 @@ class ContextLengthExceededError(ProviderError):
 
     def __init__(self, message: str = "", *, cause: Exception | None = None) -> None:
         super().__init__(message, retryable=False, cause=cause)
+
+
+class KnowledgeBaseError(LumosError):
+    """知识库相关错误的基类。"""
+
+
+class KnowledgeBaseNotFoundError(KnowledgeBaseError):
+    """知识库不存在。"""
+
+
+class KnowledgeBaseAlreadyExistsError(KnowledgeBaseError):
+    """同名知识库已存在。"""
+
+
+class KnowledgeDocumentNotFoundError(KnowledgeBaseError):
+    """文档不存在。"""
+
+
+class DocumentParseError(KnowledgeBaseError):
+    """文档解析失败。"""
+
+
+class DocumentTooLargeError(KnowledgeBaseError):
+    """文档超过大小限制。"""
+
+
+class UnsupportedMimeTypeError(KnowledgeBaseError):
+    """不支持的 MIME 类型。"""
+
+
+class VectorServiceUnavailableError(KnowledgeBaseError):
+    """vector-service 不可用。"""
+
+
+class IndexingJobError(KnowledgeBaseError):
+    """索引任务执行失败。"""

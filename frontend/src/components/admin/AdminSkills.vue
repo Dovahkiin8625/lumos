@@ -54,6 +54,20 @@ async function reload() {
   }
 }
 
+function fileName(path: string): string {
+  if (!path) return ''
+  const parts = path.split(/[\\/]/).filter(Boolean)
+  return parts[parts.length - 1] ?? path
+}
+
+// Single source for the bottom meta-line so all chips sit on one row.
+function chipMeta(s: SkillOut) {
+  const tags = s.tags.map((t) => ({ key: 'tag-' + t, label: t, kind: 'tag' as const }))
+  const req = s.required_tools.map((t) => ({ key: 'r-' + t, label: t, kind: 'req' as const }))
+  const opt = s.optional_tools.map((t) => ({ key: 'o-' + t, label: t, kind: 'opt' as const }))
+  return [...tags, ...req, ...opt]
+}
+
 onMounted(() => skills.load())
 </script>
 
@@ -77,32 +91,67 @@ onMounted(() => skills.load())
       暂无技能。点击右上角"新建"或放入 <code>skills.dirs[0]</code> 目录后点"重载"。
     </div>
 
-    <div v-else class="space-y-2">
-      <Card v-for="s in skills.list" :key="s.name">
-        <CardContent class="flex items-start gap-4 p-4">
-          <div class="min-w-0 flex-1">
-            <div class="flex items-center gap-2">
-              <span class="font-medium text-foreground">{{ s.name }}</span>
-              <span class="font-mono text-xs text-muted-foreground">v{{ s.version }}</span>
+    <div
+      v-else
+      class="grid gap-2.5 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3"
+    >
+      <Card v-for="s in skills.list" :key="s.name" class="flex flex-col py-0">
+        <CardContent class="flex flex-1 flex-col gap-1.5 p-3">
+          <!-- 顶部：名称 + 开关 + 操作 -->
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex min-w-0 flex-1 items-baseline gap-1.5">
+              <span class="truncate text-sm font-medium text-foreground">{{ s.name }}</span>
+              <span class="font-mono text-[10px] text-muted-foreground">v{{ s.version }}</span>
+              <span
+                v-if="s.dir_path"
+                class="truncate font-mono text-[10px] text-muted-foreground/70"
+                :title="s.dir_path"
+              >
+                · {{ fileName(s.dir_path) }}
+              </span>
             </div>
-            <p class="mt-1 line-clamp-2 text-sm text-muted-foreground">{{ s.description }}</p>
-            <div v-if="s.tags.length || s.required_tools.length" class="mt-2 flex flex-wrap gap-1">
-              <span v-for="t in s.tags" :key="t" class="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
-                {{ t }}
-              </span>
-              <span v-for="t in s.required_tools" :key="'r-'+t" class="rounded bg-accent/10 px-1.5 py-0.5 text-xs text-accent">
-                {{ t }}
-              </span>
+            <div class="flex flex-shrink-0 items-center gap-0.5">
+              <Switch
+                :model-value="s.enabled"
+                size="sm"
+                @update:model-value="toggle(s)"
+              />
+              <Button variant="ghost" size="icon" class="h-6 w-6" @click="openEdit(s)" title="编辑">
+                <Pencil class="h-3 w-3" />
+              </Button>
+              <Button variant="ghost" size="icon" class="h-6 w-6" @click="remove(s)" title="删除">
+                <Trash2 class="h-3 w-3 text-destructive" />
+              </Button>
             </div>
           </div>
-          <div class="flex flex-shrink-0 items-center gap-2">
-            <Switch :model-value="s.enabled" @update:model-value="toggle(s)" />
-            <Button variant="ghost" size="icon" @click="openEdit(s)">
-              <Pencil class="h-3.5 w-3.5" />
-            </Button>
-            <Button variant="ghost" size="icon" @click="remove(s)">
-              <Trash2 class="h-3.5 w-3.5 text-destructive" />
-            </Button>
+
+          <!-- 描述 -->
+          <p class="line-clamp-1 text-xs text-foreground/80" :title="s.description">
+            {{ s.description || '—' }}
+          </p>
+
+          <!-- 元信息行：标签 + 工具 -->
+          <div v-if="chipMeta(s).length" class="flex flex-wrap gap-1">
+            <span
+              v-for="m in chipMeta(s)"
+              :key="m.key"
+              :class="[
+                'rounded px-1.5 py-0.5 text-[10px] font-mono',
+                m.kind === 'req'
+                  ? 'bg-accent/10 text-accent'
+                  : m.kind === 'opt'
+                    ? 'bg-muted text-muted-foreground'
+                    : 'bg-muted text-muted-foreground',
+              ]"
+            >
+              {{ m.label }}
+            </span>
+          </div>
+
+          <!-- 底部：最大步数 -->
+          <div class="mt-auto flex items-center justify-between text-[10px] text-muted-foreground">
+            <span class="uppercase tracking-wider">最大步数</span>
+            <span class="font-mono text-foreground/80">{{ s.max_steps ?? '默认' }}</span>
           </div>
         </CardContent>
       </Card>

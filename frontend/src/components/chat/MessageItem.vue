@@ -1,38 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { marked } from 'marked'
-import hljs from 'highlight.js/lib/core'
-import javascript from 'highlight.js/lib/languages/javascript'
-import python from 'highlight.js/lib/languages/python'
-import bash from 'highlight.js/lib/languages/bash'
-import json from 'highlight.js/lib/languages/json'
 import 'highlight.js/styles/github-dark.css'
 import { UserCircle2, Sparkles } from 'lucide-vue-next'
 import ToolCallCard from '@/components/chat/ToolCallCard.vue'
 import type { MessageOut, ToolCall } from '@/types/domain'
-
-hljs.registerLanguage('javascript', javascript)
-hljs.registerLanguage('python', python)
-hljs.registerLanguage('bash', bash)
-hljs.registerLanguage('json', json)
-
-// Marked v14 removed the built-in `highlight` option from setOptions.
-// Use the official renderer override so hljs actually runs against code blocks.
-marked.use({
-  breaks: true,
-  renderer: {
-    code(token: { text: string; lang?: string } | string): string {
-      const code = typeof token === 'string' ? token : token.text
-      const lang = typeof token === 'string' ? undefined : token.lang
-      const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext'
-      const highlighted =
-        lang && hljs.getLanguage(lang)
-          ? hljs.highlight(code, { language: lang }).value
-          : hljs.highlightAuto(code).value
-      return `<pre><code class="hljs language-${language}">${highlighted}</code></pre>`
-    },
-  },
-})
+import { useMarkdown } from '@/composables/useMarkdown'
 
 const props = defineProps<{
   message: MessageOut
@@ -42,13 +14,11 @@ const props = defineProps<{
 
 const emit = defineEmits<{ usePrompt: [string] }>()
 
+const { render } = useMarkdown()
+
 const html = computed(() => {
   if (props.message.role !== 'assistant') return ''
-  try {
-    return marked.parse(props.message.content) as string
-  } catch {
-    return ''
-  }
+  return render(props.message.content)
 })
 
 const toolCalls = computed<ToolCall[]>(() => props.message.tool_calls ?? [])

@@ -84,6 +84,31 @@ class AgentConfig:
 
 
 @dataclass(frozen=True)
+class KnowledgeBaseConfig:
+    """知识库配置。文档解析与分片逻辑由 vector-service 提供。"""
+    vector_service_url: str = "http://localhost:8080"
+    database_name: str = "lumos"
+    embed_model: str = "bge-m3"
+    rerank_model: str = "bge-reranker-v2-m3"
+    chunk_size: int = 500
+    chunk_overlap: int = 75
+    search_top_k: int = 50
+    rerank_top_n: int = 8
+    auto_load_models: bool = True
+    storage_dir: str = "./data/knowledge_bases"
+    max_file_size_mb: int = 50
+    request_timeout: int = 300
+    allowed_mime_types: tuple[str, ...] = (
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "text/markdown",
+        "text/plain",
+        "text/html",
+    )
+
+
+@dataclass(frozen=True)
 class LumosConfig:
     server: ServerConfig
     provider: ProviderConfig
@@ -93,6 +118,7 @@ class LumosConfig:
     mcp: McpConfig
     auth: AuthConfig
     agent: AgentConfig
+    knowledge_base: KnowledgeBaseConfig = field(default_factory=KnowledgeBaseConfig)
     log_level: str = "INFO"
 
 
@@ -154,5 +180,8 @@ def load_config(path: Path | str) -> LumosConfig:
         mcp=McpConfig(servers=mcp_servers),
         auth=AuthConfig(**(raw.get("auth", {}) or {})),
         agent=AgentConfig(**(raw.get("agent", {}) or {})),
+        knowledge_base=KnowledgeBaseConfig(
+            **(raw.get("knowledge_base", {}) or {})
+        ),
         log_level=raw.get("log_level", "INFO"),
     )

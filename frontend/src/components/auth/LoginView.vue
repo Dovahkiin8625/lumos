@@ -58,7 +58,7 @@ async function submit() {
         {{ title }}
       </h1>
 
-      <Tabs v-model:value="mode">
+      <Tabs v-model="mode">
         <TabsList class="w-fit">
           <TabsTrigger value="login">登录</TabsTrigger>
           <TabsTrigger value="register">注册</TabsTrigger>

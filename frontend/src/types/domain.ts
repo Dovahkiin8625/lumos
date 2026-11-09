@@ -104,6 +104,102 @@ export interface McpServerCreate {
   headers?: Record<string, string>
 }
 
+// ---------------------------------------------------------------------------
+// 知识库
+// ---------------------------------------------------------------------------
+
+export interface KnowledgeBaseOut {
+  id: string
+  name: string
+  description: string
+  embedding_model: string
+  rerank_model: string
+  chunk_size: number
+  chunk_overlap: number
+  milvus_collection: string
+  enabled: boolean
+  document_count: number
+  indexed_chunk_count: number
+  created_at: string
+  updated_at: string
+}
+
+export interface KnowledgeBaseCreate {
+  name: string
+  description?: string
+  embedding_model?: string
+  rerank_model?: string
+  chunk_size?: number
+  chunk_overlap?: number
+  enabled?: boolean
+}
+
+export interface KnowledgeBaseUpdate {
+  description?: string
+  chunk_size?: number
+  chunk_overlap?: number
+  enabled?: boolean
+}
+
+export type KnowledgeDocumentStatus =
+  | 'pending'
+  | 'parsing'
+  | 'chunking'
+  | 'embedding'
+  | 'ready'
+  | 'failed'
+  | 'deleting'
+
+export interface KnowledgeDocumentOut {
+  id: string
+  kb_id: string
+  filename: string
+  mime_type: string
+  file_size: number
+  status: KnowledgeDocumentStatus
+  error: string | null
+  chunk_count: number
+  page_count: number | null
+  doc_metadata: Record<string, unknown>
+  created_at: string
+  indexed_at: string | null
+}
+
+export interface KnowledgeDocumentStatusOut {
+  id: string
+  status: KnowledgeDocumentStatus
+  error: string | null
+  chunk_count: number
+  indexed_at: string | null
+}
+
+export interface RetrievalHit {
+  text: string
+  score: number
+  doc_id: string
+  chunk_index: number
+  section_header: string | null
+  page_number: number | null
+  filename: string
+  title: string | null
+  citation: string
+}
+
+export interface KnowledgeSearchRequest {
+  query: string
+  top_k?: number
+  search_top_k?: number
+  use_rerank?: boolean
+  filter_filename?: string | null
+}
+
+export interface KnowledgeSearchResponse {
+  query: string
+  hits: RetrievalHit[]
+  rerank_used: boolean
+  took_ms: number
+}
+
 // WS 事件
 export type WsServerEvent =
   | { type: 'text'; session_id: string; data: { delta: string } }

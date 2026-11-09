@@ -9,13 +9,14 @@ from lumos.persistence.models import Message as MsgModel
 
 
 def _serialize_message(msg: Message) -> dict:
+    # content 列只存 markdown 文本（来自 TextContent 拼接）。
+    # tool_calls 单独存到 tool_calls 列。旧版会把所有 part JSON 化塞进 content，
+    # 导致纯文本回复也被渲染成 `[{"type":"text","text":"..."}]`。
     if isinstance(msg.content, str):
         content_str = msg.content
     else:
-        content_str = json.dumps(
-            [c.to_dict() for c in msg.content],
-            ensure_ascii=False,
-        )
+        text_parts = [c.text for c in msg.content if c.type == "text"]
+        content_str = "".join(text_parts)
     tool_calls_json = None
     if isinstance(msg.content, list):
         tcs = [c for c in msg.content if c.type == "tool_call"]
@@ -30,6 +31,34 @@ def _serialize_message(msg: Message) -> dict:
         "name": msg.name,
         "tool_call_id": msg.tool_call_id,
     }
+
+
+def decode_legacy_json_content(raw: str) -> str | None:
+    """旧版数据中 content 列是 JSON 列表（如 `[{"type":"text","text":"..."}]`），
+    这里提取 text 段并拼接。
+
+    返回值约定：
+    - 解析失败 / 不是列表 / 没有 text 段 → ``None``。调用方按原值使用，
+      避免覆盖可能含图片/文件/工具调用等非文本段的旧数据。
+    - 至少有一个 text 段 → 拼接后的纯文本。
+    """
+    stripped = raw.lstrip()
+    if not stripped.startswith("["):
+        return None
+    try:
+        parts = json.loads(raw)
+    except (ValueError, TypeError):
+        return None
+    if not isinstance(parts, list):
+        return None
+    text_parts = [
+        p.get("text", "")
+        for p in parts
+        if isinstance(p, dict) and p.get("type") == "text" and isinstance(p.get("text", ""), str)
+    ]
+    if not text_parts:
+        return None
+    return "".join(text_parts)
 
 
 class MessageRepository:
@@ -90,17 +119,31 @@ class MessageRepository:
                     name=r.name,
                 ))
             elif r.tool_calls:
+                # 优先使用新版纯文本格式；旧版回退到 JSON 列表解析。
+                content_str = r.content
+                # tool_calls 列偶有损坏（旧版本 bug、手动编辑、迁移失败）。
+                # 一旦 json.loads 抛错，整个 session 的 history 都会读不出来——所以
+                # 这里降级为：丢弃该行 tool_calls，按纯文本处理。绝不向调用方抛错。
                 try:
-                    parts_raw = json.loads(r.content)
                     tc_raws = json.loads(r.tool_calls)
-                    parts = [TextContent(text=p["text"]) for p in parts_raw if p.get("type") == "text"]
-                    parts.extend(
+                    tcs = [
                         TC(id=t["id"], name=t["name"], arguments=t["arguments"])
                         for t in tc_raws
-                    )
-                    out.append(Message(role="assistant", content=parts))
-                except Exception:
-                    out.append(Message(role="assistant", content=r.content))
+                    ]
+                except (ValueError, TypeError):
+                    tc_raws = None
+                    tcs = []
+                legacy_text = decode_legacy_json_content(r.content)
+                if legacy_text is not None:
+                    content_str = legacy_text
+                parts: list = []
+                if content_str:
+                    parts.append(TextContent(text=content_str))
+                parts.extend(tcs)
+                out.append(Message(role="assistant", content=parts))
             else:
-                out.append(Message(role=r.role, content=r.content))
+                # 旧版可能把纯文本回复也 JSON 化了，这里同样兜底。
+                legacy_text = decode_legacy_json_content(r.content)
+                content_val = legacy_text if legacy_text is not None else r.content
+                out.append(Message(role=r.role, content=content_val))
         return out

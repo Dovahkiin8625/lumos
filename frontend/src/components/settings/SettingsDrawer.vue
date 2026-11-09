@@ -35,7 +35,7 @@ async function toggleSkill(name: string, on: boolean) {
         <SheetTitle>设置</SheetTitle>
       </SheetHeader>
 
-      <Tabs v-model:value="tab" class="w-full">
+      <Tabs v-model="tab" class="w-full">
         <TabsList class="mx-4 mt-3">
           <TabsTrigger value="skills">
             <Sparkles class="mr-1.5 h-3.5 w-3.5" :stroke-width="1.75" />

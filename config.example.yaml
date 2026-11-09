@@ -47,3 +47,24 @@ auth:
 agent:
   max_steps: 15
   context_compress_threshold: 60000
+
+knowledge_base:
+  vector_service_url: "http://localhost:8080"
+  database_name: "lumos"
+  embed_model: "bge-m3"
+  rerank_model: "bge-reranker-v2-m3"
+  chunk_size: 500
+  chunk_overlap: 75
+  search_top_k: 50
+  rerank_top_n: 8
+  auto_load_models: true
+  storage_dir: "./data/knowledge_bases"
+  max_file_size_mb: 50
+  request_timeout: 300
+  allowed_mime_types:
+    - "application/pdf"
+    - "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    - "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    - "text/markdown"
+    - "text/plain"
+    - "text/html"

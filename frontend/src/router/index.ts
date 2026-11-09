@@ -17,6 +17,11 @@ const router = createRouter({
         { path: '', redirect: '/chat' },
         { path: 'chat', name: 'chat', component: () => import('@/components/chat/ChatView.vue') },
         { path: 'admin', name: 'admin', component: () => import('@/components/admin/AdminView.vue') },
+        {
+          path: 'admin/knowledge_base/:id',
+          name: 'admin-knowledge-base-detail',
+          component: () => import('@/components/admin/AdminKnowledgeBaseDetail.vue'),
+        },
       ],
     },
     { path: '/:pathMatch(.*)*', redirect: '/' },
